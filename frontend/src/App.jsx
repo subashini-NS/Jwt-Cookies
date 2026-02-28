@@ -7,6 +7,7 @@ import Clients from "./pages/Clients.jsx";
 
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import { AuthProvider } from "./auth/AuthContext.jsx";
+import Product from "./pages/Product.jsx";
 
 export default function App() {
   return (
@@ -29,6 +30,14 @@ export default function App() {
               <ProtectedRoute permission="CLIENT_READ">
                 <Clients />
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/product"
+            element={
+              <ProtectedRoute permission="PRODUCT_READ">
+                <Product />
+               </ProtectedRoute>
             }
           />
         </Routes>

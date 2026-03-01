@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.routes.js";
 import clientRoutes from "./routes/client.routes.js";
+import productRoutes from "./routes/product.routes.js";
 
 dotenv.config();
 
@@ -75,6 +76,9 @@ app.get("/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/clients", clientRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/product", productRoutes);
+
 
 /* -------------------------------------------------------------------------- */
 /*                          Global Error Handler                                */

@@ -10,15 +10,15 @@ const productSchema = new mongoose.Schema(
     },
 
     price: {
-      type: String,
-      lowercase: true,
-      trim: true,
-      index: true,
+      type: Number,
+      required: true,
+      min: 0,
     },
 
-    Quantity: {
-      type: String,
-      trim: true,
+    quantity: {
+      type: Number,
+      min: 0,
+      default: 0,
     },
 
     createdBy: {

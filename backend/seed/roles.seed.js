@@ -3,6 +3,10 @@ await Permission.insertMany([
   { key: "CLIENT_CREATE" },
   { key: "CLIENT_UPDATE" },
   { key: "CLIENT_DELETE" },
+  { key: "PRODUCT_READ" },
+  { key: "PRODUCT_CREATE" },
+  { key: "PRODUCT_UPDATE" },
+  { key: "PRODUCT_DELETE" },
   { key: "ROLE_READ" },
   { key: "ROLE_CREATE" },
   { key: "ROLE_UPDATE" },
@@ -17,7 +21,7 @@ const map = (keys) =>
 await Role.insertMany([
   {
     name: "end-user",
-    permissions: map(["CLIENT_READ"]),
+    permissions: map(["CLIENT_READ", "PRODUCT_READ"]),
   },
   {
     name: "admin",
@@ -26,6 +30,10 @@ await Role.insertMany([
       "CLIENT_CREATE",
       "CLIENT_UPDATE",
       "CLIENT_DELETE",
+      "PRODUCT_READ",
+      "PRODUCT_CREATE",
+      "PRODUCT_UPDATE",
+      "PRODUCT_DELETE",
     ]),
   },
   {

@@ -1,7 +1,7 @@
 import express from "express";
 import { authenticate } from "../middlewares/auth.middleware.js";
 import { authorize } from "../middlewares/authorize.middleware.js";
-import * as controller from "../controllers/client.controller.js";
+import * as controller from "../controllers/product.controller.js";
 
 const router = express.Router();
 

@@ -1,14 +1,21 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
-export default function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth();
+export default function ProtectedRoute({ children, permission }) {
+  const { user, loading, hasPermission } = useAuth();
+  const location = useLocation();
 
-  if (loading) return null;
-
-  if (!user) {
-    return <Navigate to="/login" />;
+  if (loading) {
+    return <div className="p-4 text-center">Loading...</div>;
   }
 
-  return children;
+  if (!user) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  if (permission && !hasPermission(permission)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children || <Outlet />;
 }

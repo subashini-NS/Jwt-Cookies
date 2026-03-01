@@ -21,7 +21,16 @@ const map = (keys) =>
 await Role.insertMany([
   {
     name: "end-user",
-    permissions: map(["CLIENT_READ", "PRODUCT_READ"]),
+    permissions: map([
+      "CLIENT_READ",
+      "CLIENT_CREATE",
+      "CLIENT_UPDATE",
+      "CLIENT_DELETE",
+      "PRODUCT_READ",
+      "PRODUCT_CREATE",
+      "PRODUCT_UPDATE",
+      "PRODUCT_DELETE",
+    ]),
   },
   {
     name: "admin",

@@ -10,14 +10,19 @@ export const AuthProvider = ({ children }) => {
 
   const hasCheckedAuth = useRef(false);
 
-  const loadUser = async () => {
+  const loadUser = async (throwOnError = false) => {
     try {
       const res = await api.get("/auth/me");
       setUser(res.data.user);
       setPermissions(res.data.user.permissions || []);
-    } catch {
+      return res.data.user;
+    } catch (error) {
       setUser(null);
       setPermissions([]);
+      if (throwOnError) {
+        throw error;
+      }
+      return null;
     } finally {
       setLoading(false);
     }
@@ -32,18 +37,21 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     await api.post("/auth/login", credentials);
-    await loadUser();
+    await loadUser(true);
   };
 
   const register = async (data) => {
     await api.post("/auth/register", data);
-    await loadUser();
+    await loadUser(true);
   };
 
   const logout = async () => {
-    await api.post("/auth/logout");
-    setUser(null);
-    setPermissions([]);
+    try {
+      await api.post("/auth/logout");
+    } finally {
+      setUser(null);
+      setPermissions([]);
+    }
   };
 
   const hasPermission = (perm) => permissions.includes(perm);

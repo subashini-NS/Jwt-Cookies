@@ -8,6 +8,27 @@ import Role from "../models/Role.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.js";
 import { cookieOptions } from "../utils/cookies.js";
 
+const getFallbackRole = async () =>
+  (await Role.findOne({ name: "end-user" })) || (await Role.findOne());
+
+const ensureValidUserRole = async (userDoc) => {
+  if (userDoc?.role) {
+    const existingRole = await Role.findById(userDoc.role);
+    if (existingRole) {
+      return existingRole;
+    }
+  }
+
+  const fallbackRole = await getFallbackRole();
+  if (!fallbackRole) {
+    return null;
+  }
+
+  userDoc.role = fallbackRole._id;
+  await userDoc.save({ validateBeforeSave: false });
+  return fallbackRole;
+};
+
 /* -------------------------------------------------------------------------- */
 /*                                  REGISTER                                   */
 /* -------------------------------------------------------------------------- */
@@ -24,9 +45,11 @@ export const register = async (req, res, next) => {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    const role = await Role.findOne({ name: "end-user" });
+    const role = await getFallbackRole();
     if (!role) {
-      return res.status(500).json({ message: "Default role not found" });
+      return res.status(500).json({
+        message: "No roles configured. Run the seed script and try again.",
+      });
     }
 
     const user = await User.create({
@@ -94,6 +117,13 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    const role = await ensureValidUserRole(user);
+    if (!role) {
+      return res.status(500).json({
+        message: "No roles configured. Run the seed script and try again.",
+      });
+    }
+
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
@@ -136,18 +166,26 @@ export const logout = async (req, res) => {
 };
 
 export const me = async (req, res) => {
-  if (!req.user.role) {
-    return res.status(500).json({
-      message: "User role not assigned",
+  const user = await User.findById(req.user.id);
+  if (!user || !user.isActive) {
+    return res.status(401).json({
+      message: "Unauthorized",
     });
   }
 
-  const role = await Role.findById(req.user.role).populate(
+  const role = await ensureValidUserRole(user);
+  if (!role) {
+    return res.status(500).json({
+      message: "No roles configured. Run the seed script and try again.",
+    });
+  }
+
+  const hydratedRole = await Role.findById(role._id).populate(
     "permissions",
     "key",
   );
 
-  if (!role) {
+  if (!hydratedRole) {
     return res.status(500).json({
       message: "Role not found. Contact administrator.",
     });
@@ -155,10 +193,10 @@ export const me = async (req, res) => {
 
   res.status(200).json({
     user: {
-      id: req.user.id,
-      email: req.user.email,
-      role: role.name,
-      permissions: role.permissions.map((p) => p.key),
+      id: user._id,
+      email: user.email,
+      role: hydratedRole.name,
+      permissions: hydratedRole.permissions.map((p) => p.key),
     },
   });
 };

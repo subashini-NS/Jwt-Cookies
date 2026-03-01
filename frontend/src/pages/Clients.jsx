@@ -59,7 +59,7 @@ export default function Clients() {
   if (loading) return <div className="p-4">Loading...</div>;
 
   return (
-    <div className="container mt-4">
+    <div>
       <div className="d-flex justify-content-between mb-3">
         <h4>Clients</h4>
         <button className="btn btn-primary" onClick={handleAdd}>
@@ -67,49 +67,51 @@ export default function Clients() {
         </button>
       </div>
 
-      <table className="table table-bordered table-hover">
-        <thead className="table-light">
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th width="180">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {clients.map((c) => (
-            <tr key={c._id}>
-              <td>{c.name}</td>
-              <td>{c.email || "-"}</td>
-              <td>{c.phone || "-"}</td>
-              <td>
-                <button
-                  className="btn btn-sm btn-outline-info me-1"
-                  onClick={() => handleEdit(c)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn btn-sm btn-outline-danger"
-                  onClick={() => {
-                    setDeleteId(c._id);
-                    setShowDelete(true);
-                  }}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-          {!clients.length && (
+      <div className="table-responsive">
+        <table className="table table-bordered table-hover align-middle">
+          <thead className="table-light">
             <tr>
-              <td colSpan="4" className="text-center">
-                No clients found
-              </td>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th width="180">Actions</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {clients.map((c) => (
+              <tr key={c._id}>
+                <td>{c.name}</td>
+                <td>{c.email || "-"}</td>
+                <td>{c.phone || "-"}</td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-outline-info me-1"
+                    onClick={() => handleEdit(c)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={() => {
+                      setDeleteId(c._id);
+                      setShowDelete(true);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {!clients.length && (
+              <tr>
+                <td colSpan="4" className="text-center">
+                  No clients found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <ClientFormModal
         show={showForm}

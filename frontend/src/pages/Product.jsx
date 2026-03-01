@@ -11,6 +11,7 @@ import ConfirmModal from "../components/ConfirmModal";
 export default function Product() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [brokenImages, setBrokenImages] = useState({});
 
   const [showForm, setShowForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -22,6 +23,7 @@ export default function Product() {
     setLoading(true);
     const res = await fetchProduct();
     setProducts(res.data.data);
+    setBrokenImages({});
     setLoading(false);
   };
 
@@ -58,7 +60,7 @@ export default function Product() {
   if (loading) return <div className="p-4">Loading...</div>;
 
   return (
-    <div className="container mt-4">
+    <div>
       <div className="d-flex justify-content-between mb-3">
         <h4>Products</h4>
         <button className="btn btn-primary" onClick={handleAdd}>
@@ -66,49 +68,69 @@ export default function Product() {
         </button>
       </div>
 
-      <table className="table table-bordered table-hover">
-        <thead className="table-light">
-          <tr>
-            <th>Product Name</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th width="180">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((p) => (
-            <tr key={p._id}>
-              <td>{p.productName}</td>
-              <td>{p.price ?? "-"}</td>
-              <td>{p.quantity ?? "-"}</td>
-              <td>
-                <button
-                  className="btn btn-sm btn-outline-info me-1"
-                  onClick={() => handleEdit(p)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn btn-sm btn-outline-danger"
-                  onClick={() => {
-                    setDeleteId(p._id);
-                    setShowDelete(true);
-                  }}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-          {!products.length && (
+      <div className="table-responsive">
+        <table className="table table-bordered table-hover align-middle">
+          <thead className="table-light">
             <tr>
-              <td colSpan="4" className="text-center">
-                No products found
-              </td>
+              <th>Product Name</th>
+              <th>Image</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th width="180">Actions</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {products.map((p) => (
+              <tr key={p._id}>
+                <td>{p.productName}</td>
+                <td>
+                  {p.imageUrl && !brokenImages[p._id] ? (
+                    <img
+                      src={p.imageUrl}
+                      alt={p.productName}
+                      className="product-thumb"
+                      onError={() =>
+                        setBrokenImages((prev) => ({
+                          ...prev,
+                          [p._id]: true,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <span className="text-muted">No image</span>
+                  )}
+                </td>
+                <td>{p.price ?? "-"}</td>
+                <td>{p.quantity ?? "-"}</td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-outline-info me-1"
+                    onClick={() => handleEdit(p)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={() => {
+                      setDeleteId(p._id);
+                      setShowDelete(true);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {!products.length && (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  No products found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <ProductFormModal
         show={showForm}

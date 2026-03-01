@@ -10,7 +10,9 @@ export default function ProductFormModal({
     productName: "",
     price: "",
     quantity: "",
+    imageUrl: "",
   });
+  const [previewBroken, setPreviewBroken] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -18,6 +20,7 @@ export default function ProductFormModal({
         productName: initialData.productName || "",
         price: initialData.price ?? "",
         quantity: initialData.quantity ?? "",
+        imageUrl: initialData.imageUrl || "",
       });
       return;
     }
@@ -26,8 +29,13 @@ export default function ProductFormModal({
       productName: "",
       price: "",
       quantity: "",
+      imageUrl: "",
     });
   }, [initialData, show]);
+
+  useEffect(() => {
+    setPreviewBroken(false);
+  }, [form.imageUrl, show]);
 
   if (!show) return null;
 
@@ -85,6 +93,27 @@ export default function ProductFormModal({
                   setForm({ ...form, quantity: e.target.value })
                 }
               />
+              <input
+                className="form-control mt-2"
+                placeholder="Image URL"
+                value={form.imageUrl}
+                onChange={(e) =>
+                  setForm({ ...form, imageUrl: e.target.value })
+                }
+              />
+              {form.imageUrl && !previewBroken && (
+                <div className="mt-2 text-center border rounded p-2 bg-light">
+                  <img
+                    src={form.imageUrl}
+                    alt="Product preview"
+                    className="product-image-preview"
+                    onError={() => setPreviewBroken(true)}
+                  />
+                </div>
+              )}
+              {form.imageUrl && previewBroken && (
+                <div className="mt-2 text-danger small">Image URL is not valid.</div>
+              )}
             </div>
 
             <div className="modal-footer">

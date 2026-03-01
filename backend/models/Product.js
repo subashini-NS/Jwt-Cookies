@@ -21,6 +21,12 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
 
+    imageUrl: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

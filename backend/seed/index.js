@@ -31,7 +31,16 @@ const byKey = (keys) =>
 await Role.insertMany([
   {
     name: "end-user",
-    permissions: byKey(["CLIENT_READ", "PRODUCT_READ"]),
+    permissions: byKey([
+      "CLIENT_READ",
+      "CLIENT_CREATE",
+      "CLIENT_UPDATE",
+      "CLIENT_DELETE",
+      "PRODUCT_READ",
+      "PRODUCT_CREATE",
+      "PRODUCT_UPDATE",
+      "PRODUCT_DELETE",
+    ]),
   },
   {
     name: "admin",

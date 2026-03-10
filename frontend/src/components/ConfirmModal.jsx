@@ -16,10 +16,10 @@ export default function ConfirmModal({
           </div>
           <div className="modal-body">{message}</div>
           <div className="modal-footer">
-            <button className="btn btn-secondary" onClick={onCancel}>
+            <button type="button" className="btn btn-secondary" onClick={onCancel}>
               Cancel
             </button>
-            <button className="btn btn-danger" onClick={onConfirm}>
+            <button type="button" className="btn btn-danger" onClick={onConfirm}>
               Delete
             </button>
           </div>

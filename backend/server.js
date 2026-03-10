@@ -8,6 +8,8 @@ import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.routes.js";
 import clientRoutes from "./routes/client.routes.js";
+import productRoutes from "./routes/product.routes.js";
+import { ensureRbac } from "./bootstrap/rbac.bootstrap.js";
 
 dotenv.config();
 
@@ -37,7 +39,24 @@ app.use(
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (origin === process.env.CLIENT_URL) {
+        return callback(null, true);
+      }
+
+      if (
+        process.env.NODE_ENV !== "production" &&
+        /^https?:\/\/localhost:\d+$/.test(origin)
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("CORS: Origin not allowed"));
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   }),
@@ -75,6 +94,9 @@ app.get("/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/clients", clientRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/product", productRoutes);
+
 
 /* -------------------------------------------------------------------------- */
 /*                          Global Error Handler                                */
@@ -96,6 +118,8 @@ const connectDB = async () => {
     await mongoose.connect(process.env.MONGO_URI, {
       autoIndex: false,
     });
+
+    await ensureRbac();
 
     console.log("MongoDB connected");
 

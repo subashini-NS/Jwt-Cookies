@@ -13,8 +13,21 @@ export default function ClientFormModal({
   });
 
   useEffect(() => {
-    if (initialData) setForm(initialData);
-  }, [initialData]);
+    if (initialData) {
+      setForm({
+        name: initialData.name || "",
+        email: initialData.email || "",
+        phone: initialData.phone || "",
+      });
+      return;
+    }
+
+    setForm({
+      name: "",
+      email: "",
+      phone: "",
+    });
+  }, [initialData, show]);
 
   if (!show) return null;
 
@@ -60,7 +73,11 @@ export default function ClientFormModal({
             </div>
 
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={onClose}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onClose}
+              >
                 Cancel
               </button>
               <button className="btn btn-primary" type="submit">
